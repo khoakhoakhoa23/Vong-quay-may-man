@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 namespace DrawLuckyWheel
 {
+   
     public partial class Form1 : Form
     {
         bool wheelIsMoved;// biến boolean dùng để xác định vòng quay di chuyển hay không
@@ -156,25 +157,8 @@ namespace DrawLuckyWheel
             }
         }
 
-       // private void BtnPlay_Click(object sender, EventArgs e)
-        //{
-           // wheelIsMoved = true;  // Bắt đầu quay vòng
-           // int inputTimes;
+        
 
-            // Kiểm tra xem người dùng có nhập số hợp lệ không
-           // if (int.TryParse(txtWheelTimes.Text, out inputTimes) && inputTimes > 0)
-           // {
-           //     wheelTimes = inputTimes; // Sử dụng số vòng quay người dùng nhập vào
-           // }
-           // else
-            //{
-                // Nếu không nhập giá trị hợp lệ, sử dụng giá trị ngẫu nhiên
-             //   Random rand = new Random();
-            //    wheelTimes = rand.Next(150, 200); // Random số vòng quay
-            //}
-
-            //wheelTimer.Start();  // Bắt đầu Timer để quay vòng
-       // }
-
+        
     }
 }
