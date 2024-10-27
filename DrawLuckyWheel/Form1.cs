@@ -11,22 +11,21 @@ namespace DrawLuckyWheel
         float wheelTimes;
         Timer wheelTimer;
         LuckyCirlce koloFortuny;
-        List<int> inputNumbers;  // List to store the numbers entered by the user
-        List<TextBox> wheelTextBoxes;  // List to hold the pre-existing TextBoxes
+        List<int> inputNumbers;
+        List<TextBox> wheelTextBoxes;
 
         public Form1()
         {
             InitializeComponent();
             wheelTimer = new Timer();
-            wheelTimer.Interval = 30; // Speed 
+            wheelTimer.Interval = 30; // Tốc độ quay
             wheelTimer.Tick += wheelTimer_Tick;
-            inputNumbers = new List<int>();  // Initialize the list to store numbers
+            inputNumbers = new List<int>();
 
-            // Instead of creating new TextBoxes, add existing TextBoxes from the form
             wheelTextBoxes = new List<TextBox>
             {
                 textBox1, textBox2, textBox3, textBox4, textBox5,
-                textBox6, textBox7, textBox8, textBox9, textBox10 // Add all pre-existing TextBoxes here
+                textBox6, textBox7, textBox8, textBox9, textBox10
             };
         }
 
@@ -39,7 +38,7 @@ namespace DrawLuckyWheel
 
             public LuckyCirlce(int[] numbers)
             {
-                obrazek = new Bitmap(Properties.Resources.lucky_wheel);  // Replace with your image resource
+                obrazek = new Bitmap(Properties.Resources.lucky_wheel);
                 wartosciStanu = numbers;
                 kat = 0.0f;
             }
@@ -47,7 +46,7 @@ namespace DrawLuckyWheel
 
         public static Bitmap RotateImage(Image image, float angle)
         {
-            return RotateImage(image, new PointF((float)image.Width / 2, (float)image.Height / 2), angle);
+            return RotateImage(image, new PointF(image.Width / 2, image.Height / 2), angle);
         }
 
         public static Bitmap RotateImage(Image image, PointF offset, float angle)
@@ -68,28 +67,6 @@ namespace DrawLuckyWheel
             return rotatedBmp;
         }
 
-        private void UpdateLabelPositions(int numSegments, float angleOffset)
-        {
-            float sectorAngle = 360f / numSegments; // Angle per sector
-            PointF center = new PointF(pictureBox.Width / 2, pictureBox.Height / 2); // Center of the wheel
-            float radius = pictureBox.Width / 2 - 50;  // Adjust this to fit the textboxes within the wheel
-
-            for (int i = 0; i < numSegments; i++)
-            {
-                float angle = (i * sectorAngle + angleOffset - 90) * (float)Math.PI / 180;
-
-                float x = center.X + (float)(radius * Math.Cos(angle)) - wheelTextBoxes[i].Width / 2;
-                float y = center.Y + (float)(radius * Math.Sin(angle)) - wheelTextBoxes[i].Height / 2;
-
-                wheelTextBoxes[i].Location = new Point((int)x, (int)y);
-
-                if (i < inputNumbers.Count)
-                {
-                    wheelTextBoxes[i].Text = inputNumbers[i].ToString();
-                }
-            }
-        }
-
         private void wheelTimer_Tick(object sender, EventArgs e)
         {
             if (wheelIsMoved && wheelTimes > 0)
@@ -98,7 +75,9 @@ namespace DrawLuckyWheel
                 koloFortuny.kat = koloFortuny.kat % 360;
 
                 pictureBox.Image = RotateImage(koloFortuny.obrazek, koloFortuny.kat);
-                UpdateLabelPositions(koloFortuny.wartosciStanu.Length, koloFortuny.kat);
+
+                // Cập nhật vị trí của các TextBox để quay cùng vòng quay
+                UpdateTextBoxPositions(koloFortuny.kat, inputNumbers.Count);
 
                 wheelTimes--;
             }
@@ -112,31 +91,90 @@ namespace DrawLuckyWheel
         {
             if (inputNumbers.Count == 0)
             {
-                MessageBox.Show("Please enter numbers for the wheel.");
+                MessageBox.Show("Vui lòng nhập các số để quay.");
                 return;
             }
 
             koloFortuny = new LuckyCirlce(inputNumbers.ToArray());
-            UpdateLabelPositions(inputNumbers.Count, 0);
 
             wheelIsMoved = true;
             Random rand = new Random();
-            wheelTimes = rand.Next(150, 200); // random number of spins
+            wheelTimes = rand.Next(150, 200); // số vòng quay ngẫu nhiên
 
             wheelTimer.Start();
         }
 
-        private void btnAddNumber_Click(object sender, EventArgs e)
+        // Thêm một giá trị vào danh sách inputNumbers
+        private void btnAdd_Click(object sender, EventArgs e)
         {
             if (int.TryParse(textBoxNumber.Text, out int number))
             {
                 inputNumbers.Add(number);
-                textBoxNumber.Clear();  // Clear the input box for the next number
-                UpdateLabelPositions(inputNumbers.Count, 0);
+                textBoxNumber.Clear();
+                UpdateTextBoxPositions(0, inputNumbers.Count); // Cập nhật vị trí ban đầu
             }
             else
             {
-                MessageBox.Show("Please enter a valid number.");
+                MessageBox.Show("Vui lòng nhập một số hợp lệ.");
+            }
+        }
+
+        // Xóa giá trị tại một chỉ số từ danh sách inputNumbers
+        private void btnRemove_Click(object sender, EventArgs e)
+        {
+            if (int.TryParse(textBoxNumber.Text, out int index) && index >= 0 && index < inputNumbers.Count)
+            {
+                inputNumbers.RemoveAt(index);
+                textBoxNumber.Clear();
+                UpdateTextBoxPositions(0, inputNumbers.Count); // Cập nhật vị trí sau khi xóa
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng nhập một chỉ số hợp lệ để xóa.");
+            }
+        }
+
+        // Chỉnh sửa giá trị ở một vị trí xác định trong danh sách inputNumbers
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            var values = textBoxNumber.Text.Split(',');
+
+            if (values.Length == 2 &&
+                int.TryParse(values[0], out int index) &&
+                index >= 0 && index < inputNumbers.Count &&
+                int.TryParse(values[1], out int newValue))
+            {
+                inputNumbers[index] = newValue;
+                textBoxNumber.Clear();
+                UpdateTextBoxPositions(0, inputNumbers.Count);
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng nhập chỉ số và giá trị mới hợp lệ (định dạng: chỉ số,giá trị).");
+            }
+        }
+
+        // Hàm cập nhật vị trí của các TextBox để quay cùng với vòng quay
+        private void UpdateTextBoxPositions(double currentAngle, int numSegments)
+        {
+            double anglePerSegment = 360f / numSegments;
+            double radius = pictureBox.Width / 2 - 250; // Adjust the radius as needed
+            PointF center = new PointF(pictureBox.Width / 2 - 100, pictureBox.Height / 2 - 50);
+
+            for (int i = 0; i < numSegments; i++)
+            {
+                double angle = currentAngle + (i * anglePerSegment) - 90; // Start from the top
+                double x = center.X + radius * (double)Math.Cos(angle * Math.PI / 180);
+                double y = center.Y + radius * (double)Math.Sin(angle * Math.PI / 180);
+
+                wheelTextBoxes[i].Location = new Point((int)x, (int)y);
+                wheelTextBoxes[i].Visible = true; // Ensure the textboxes are visible
+
+                // Cập nhật nội dung của TextBox
+                if (i < inputNumbers.Count)
+                {
+                    wheelTextBoxes[i].Text = inputNumbers[i].ToString();
+                }
             }
         }
     }
