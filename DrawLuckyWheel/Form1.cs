@@ -12,21 +12,16 @@ namespace DrawLuckyWheel
         Timer wheelTimer;
         LuckyCirlce koloFortuny;
         List<int> inputNumbers;
-        List<TextBox> wheelTextBoxes;
+        List<Label> wheelLabels; // Store the labels for the wheel
 
         public Form1()
         {
             InitializeComponent();
             wheelTimer = new Timer();
-            wheelTimer.Interval = 30; // Tốc độ quay
+            wheelTimer.Interval = 30; // Speed of rotation
             wheelTimer.Tick += wheelTimer_Tick;
             inputNumbers = new List<int>();
-
-            wheelTextBoxes = new List<TextBox>
-            {
-                textBox1, textBox2, textBox3, textBox4, textBox5,
-                textBox6, textBox7, textBox8, textBox9, textBox10
-            };
+            wheelLabels = new List<Label>(); // Initialize the list for labels
         }
 
         public class LuckyCirlce
@@ -46,21 +41,29 @@ namespace DrawLuckyWheel
 
         public static Bitmap RotateImage(Image image, float angle)
         {
+            // Gọi phương thức RotateImage với điểm giữa của hình ảnh làm điểm xoay
             return RotateImage(image, new PointF(image.Width / 2, image.Height / 2), angle);
         }
 
         public static Bitmap RotateImage(Image image, PointF offset, float angle)
         {
+            // Kiểm tra xem hình ảnh có hợp lệ không
             if (image == null)
-                throw new ArgumentNullException("image");
+                throw new ArgumentNullException(nameof(image));
 
+            // Tạo một Bitmap mới để lưu hình ảnh đã xoay
             Bitmap rotatedBmp = new Bitmap(image.Width, image.Height);
             rotatedBmp.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
             using (Graphics g = Graphics.FromImage(rotatedBmp))
             {
+                // Di chuyển hệ tọa độ đến điểm xoay
                 g.TranslateTransform(offset.X, offset.Y);
+                // Xoay hình ảnh
                 g.RotateTransform(angle);
+                // Quay lại hệ tọa độ ban đầu
                 g.TranslateTransform(-offset.X, -offset.Y);
+                // Vẽ hình ảnh đã xoay lên Bitmap mới
                 g.DrawImage(image, new PointF(0, 0));
             }
 
@@ -69,29 +72,48 @@ namespace DrawLuckyWheel
 
         private void wheelTimer_Tick(object sender, EventArgs e)
         {
+            // Kiểm tra xem bánh xe đã được quay và còn thời gian quay không
             if (wheelIsMoved && wheelTimes > 0)
             {
+                // Tăng góc quay theo thời gian
                 koloFortuny.kat += wheelTimes / 10;
                 koloFortuny.kat = koloFortuny.kat % 360;
 
+                // Cập nhật hình ảnh trong PictureBox
                 pictureBox.Image = RotateImage(koloFortuny.obrazek, koloFortuny.kat);
 
-                // Cập nhật vị trí của các TextBox để quay cùng vòng quay
-                UpdateTextBoxPositions(koloFortuny.kat, inputNumbers.Count);
+                // Cập nhật vị trí của các nhãn để xoay cùng với bánh xe
+                UpdateLabelPositions(koloFortuny.kat, inputNumbers.Count);
 
+                // Giảm số lần quay
                 wheelTimes--;
             }
 
-            koloFortuny.stan = Convert.ToInt32(Math.Ceiling(koloFortuny.kat / (360f / koloFortuny.wartosciStanu.Length))) % koloFortuny.wartosciStanu.Length;
+            // Tính chỉ số phần tử mà bánh xe đang chỉ vào
+            koloFortuny.stan = (int)Math.Floor((koloFortuny.kat + 200) / (360.0 / inputNumbers.Count)) % inputNumbers.Count;
 
-            label1.Text = Convert.ToString(koloFortuny.wartosciStanu[koloFortuny.stan]);
+            // Đảm bảo rằng chỉ số là hợp lệ
+            if (koloFortuny.stan >= 0 && koloFortuny.stan < inputNumbers.Count)
+            {
+                // Cập nhật văn bản hiển thị trạng thái hiện tại
+                label1.Text = Convert.ToString(inputNumbers[koloFortuny.stan]);
+            }
+            else
+            {
+                // Xử lý trường hợp chỉ số không hợp lệ
+                label1.Text = "Không có kết quả";
+            }
         }
+
+
+
+
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
             if (inputNumbers.Count == 0)
             {
-                MessageBox.Show("Vui lòng nhập các số để quay.");
+                MessageBox.Show("Please enter numbers to spin.");
                 return;
             }
 
@@ -99,42 +121,41 @@ namespace DrawLuckyWheel
 
             wheelIsMoved = true;
             Random rand = new Random();
-            wheelTimes = rand.Next(150, 200); // số vòng quay ngẫu nhiên
+            wheelTimes = rand.Next(150, 200); // Random number of spins
 
             wheelTimer.Start();
         }
 
-        // Thêm một giá trị vào danh sách inputNumbers
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (int.TryParse(textBoxNumber.Text, out int number))
+            if (int.TryParse(textBoxNumber.Text, out int number)) // Use a TextBox for input
             {
                 inputNumbers.Add(number);
-                textBoxNumber.Clear();
-                UpdateTextBoxPositions(0, inputNumbers.Count); // Cập nhật vị trí ban đầu
+                textBoxNumber.Clear(); // Clear the input TextBox after adding
+                CreateLabels(); // Create labels based on the current count
+                UpdateLabelPositions(0, inputNumbers.Count); // Update initial positions
             }
             else
             {
-                MessageBox.Show("Vui lòng nhập một số hợp lệ.");
+                MessageBox.Show("Please enter a valid number.");
             }
         }
 
-        // Xóa giá trị tại một chỉ số từ danh sách inputNumbers
         private void btnRemove_Click(object sender, EventArgs e)
         {
             if (int.TryParse(textBoxNumber.Text, out int index) && index >= 0 && index < inputNumbers.Count)
             {
                 inputNumbers.RemoveAt(index);
-                textBoxNumber.Clear();
-                UpdateTextBoxPositions(0, inputNumbers.Count); // Cập nhật vị trí sau khi xóa
+                textBoxNumber.Clear(); // Clear the input TextBox after removal
+                CreateLabels(); // Recreate labels after removal
+                UpdateLabelPositions(0, inputNumbers.Count); // Update positions after removal
             }
             else
             {
-                MessageBox.Show("Vui lòng nhập một chỉ số hợp lệ để xóa.");
+                MessageBox.Show("Please enter a valid index to delete.");
             }
         }
 
-        // Chỉnh sửa giá trị ở một vị trí xác định trong danh sách inputNumbers
         private void btnEdit_Click(object sender, EventArgs e)
         {
             var values = textBoxNumber.Text.Split(',');
@@ -145,36 +166,62 @@ namespace DrawLuckyWheel
                 int.TryParse(values[1], out int newValue))
             {
                 inputNumbers[index] = newValue;
-                textBoxNumber.Clear();
-                UpdateTextBoxPositions(0, inputNumbers.Count);
+                textBoxNumber.Clear(); // Clear the input TextBox after editing
+                CreateLabels(); // Recreate labels after editing
+                UpdateLabelPositions(0, inputNumbers.Count);
             }
             else
             {
-                MessageBox.Show("Vui lòng nhập chỉ số và giá trị mới hợp lệ (định dạng: chỉ số,giá trị).");
+                MessageBox.Show("Please enter a valid index and new value (format: index,value).");
             }
         }
 
-        // Hàm cập nhật vị trí của các TextBox để quay cùng với vòng quay
-        private void UpdateTextBoxPositions(double currentAngle, int numSegments)
+        // Create and position the labels dynamically based on inputNumbers
+        private void CreateLabels()
+        {
+            // Clear existing labels
+            foreach (var label in wheelLabels)
+            {
+                this.Controls.Remove(label);
+                label.Dispose(); // Dispose the old labels
+            }
+            wheelLabels.Clear(); // Clear the list
+
+            // Create new labels
+            for (int i = 0; i < inputNumbers.Count; i++)
+            {
+                Label label = new Label
+                {
+                    Text = inputNumbers[i].ToString(),
+                    Size = new Size(50, 25), // Adjust size for visibility
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    BackColor = Color.Transparent, // Make background transparent
+                    ForeColor = Color.Black, // Ensure text color is visible
+                    Font = new Font("Arial", 12, FontStyle.Bold) // Adjust font size and style
+                };
+
+                wheelLabels.Add(label);
+                this.Controls.Add(label); // Add label to the form
+            }
+        }
+
+        // Update the position of the labels to rotate with the wheel
+        private void UpdateLabelPositions(double currentAngle, int numSegments)
         {
             double anglePerSegment = 360f / numSegments;
             double radius = pictureBox.Width / 2 - 250; // Adjust the radius as needed
-            PointF center = new PointF(pictureBox.Width / 2 - 100, pictureBox.Height / 2 - 50);
+            PointF center = new PointF(pictureBox.Width / 2 - 120, pictureBox.Height / 2 - 50);
 
             for (int i = 0; i < numSegments; i++)
             {
-                double angle = currentAngle + (i * anglePerSegment) - 90; // Start from the top
+                double angle = currentAngle + (i * 36) - 90; // Start from the top
                 double x = center.X + radius * (double)Math.Cos(angle * Math.PI / 180);
                 double y = center.Y + radius * (double)Math.Sin(angle * Math.PI / 180);
 
-                wheelTextBoxes[i].Location = new Point((int)x, (int)y);
-                wheelTextBoxes[i].Visible = true; // Ensure the textboxes are visible
-
-                // Cập nhật nội dung của TextBox
-                if (i < inputNumbers.Count)
-                {
-                    wheelTextBoxes[i].Text = inputNumbers[i].ToString();
-                }
+                // Position the label
+                wheelLabels[i].Location = new Point((int)x, (int)y);
+                wheelLabels[i].Visible = true; // Ensure the labels are visible
+                wheelLabels[i].BringToFront();
             }
         }
     }
