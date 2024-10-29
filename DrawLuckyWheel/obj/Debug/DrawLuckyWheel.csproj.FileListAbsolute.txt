@@ -14,9 +14,10 @@ E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\bin\Debug\DrawLuckyWheel.exe
 E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\bin\Debug\DrawLuckyWheel.pdb
 E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.csproj.AssemblyReference.cache
 E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.csproj.SuggestedBindingRedirects.cache
-E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.Form1.resources
 E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.Properties.Resources.resources
 E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.csproj.GenerateResource.cache
 E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.csproj.CoreCompileInputs.cache
 E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.exe
 E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.pdb
+E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.FormVongQuay.resources
+E:\DrawLuckyWheel\DrawLuckyWheel\DrawLuckyWheel\obj\Debug\DrawLuckyWheel.FormDangNhap.resources

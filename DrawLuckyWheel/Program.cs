@@ -16,7 +16,8 @@ namespace DrawLuckyWheel
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            //Chạy form đăng nhập
+            Application.Run(new FormDangNhap());
         }
     }
 }
