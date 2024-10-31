@@ -44,7 +44,7 @@ namespace DrawLuckyWheel
         public static Bitmap RotateImage(Image image, float angle)
         {
             // Gọi phương thức RotateImage với điểm giữa của hình ảnh làm điểm xoay
-            return RotateImage(image, new PointF((float)image.Width / 2,(float)image.Height / 2), angle);
+            return RotateImage(image, new PointF((float)image.Width / 2-2,(float)image.Height / 2-7), angle);
         }
 
         public static Bitmap RotateImage(Image image, PointF offset, float angle)

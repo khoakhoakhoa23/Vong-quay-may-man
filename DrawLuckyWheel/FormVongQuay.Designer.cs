@@ -97,6 +97,7 @@
             this.button1.Text = "Add number";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.btnAdd_Click);
+            this.button1.Enter += new System.EventHandler(this.btnAdd_Click);
             // 
             // label3
             // 
@@ -192,7 +193,7 @@
             this.Controls.Add(this.pictureBox);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormVongQuay";
-            this.Text = "[C#] Lucky Game - https://laptrinhvb.net";
+            this.Text = "[C#] Lucky Wheel - Nhóm 11";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
