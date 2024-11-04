@@ -43,5 +43,35 @@ namespace DrawLuckyWheel
             }
 
         }
+        private string connectionString = "DataSource=localhost; Initial Catalog =CUOI KY; User ID=DESKTOP-FP9EOJM;Password=''";
+        public void Save(int userId, int score) {
+         string query = "INSERT INTO TongDiem (TenNguoiChoi, Diem, SoLuot) VALUES (@TenNguoiChoi, @Diem, @SoLuot)";
+        using (SqlConnection connection = new SqlConnection(connectionString))
+        {
+         SqlCommand command = new SqlCommand(query, connection);
+         command.Parameters.AddWithValue("@TenNguoiChoi", userId);
+         command.Parameters.AddWithValue("@Scor", score);
+         command.Parameters.AddWithValue("@DateCreated", DateTime.Now);
+         try
+         {
+             connection.Open();
+             int result = command.ExecuteNonQuery();
+
+             // Kiểm tra xem điểm đã được lưu thành công hay chưa
+             if (result > 0)
+             {
+                 Console.WriteLine("Điểm đã được lưu thành công.");
+             }
+             else
+             {
+                 Console.WriteLine("Lỗi khi lưu điểm.");
+             }
+         }
+         catch (Exception ex)
+         {
+             Console.WriteLine("Lỗi: " + ex.Message);
+         }
+     }
+ }
     }
 }
