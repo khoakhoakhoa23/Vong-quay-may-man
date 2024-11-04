@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,9 +15,11 @@ namespace DrawLuckyWheel
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();// cho phép người dùng của ưng dụng tuân theo chủ thể 
-            Application.SetCompatibleTextRenderingDefault(false);//
-            Application.Run(new Form1());//khời động vòng lặp xử lí sự kiện chính của ứng dụng
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            // Khởi chạy form đăng nhập đầu tiên
+            Application.Run(new FormDangNhap());
         }
     }
 }
